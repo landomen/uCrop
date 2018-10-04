@@ -1,6 +1,5 @@
 package com.yalantis.ucrop;
 
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
@@ -92,13 +91,13 @@ public class UCropFragment extends Fragment {
         return fragment;
     }
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
+    @Override public void onAttachFragment(Fragment childFragment) {
+        super.onAttachFragment(childFragment);
+
         try {
-            callback = (UCropFragmentCallback) context;
+            callback = (UCropFragmentCallback) childFragment;
         } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString()
+            throw new ClassCastException(childFragment.toString()
                     + " must implement UCropFragmentCallback");
         }
     }
