@@ -269,6 +269,7 @@ public class UCrop {
 
         public static final String EXTRA_DIMMED_LAYER_COLOR = EXTRA_PREFIX + ".DimmedLayerColor";
         public static final String EXTRA_CIRCLE_DIMMED_LAYER = EXTRA_PREFIX + ".CircleDimmedLayer";
+        public static final String EXTRA_FACE_DIMMED_LAYER = EXTRA_PREFIX + ".FaceDimmedLayer";
 
         public static final String EXTRA_SHOW_CROP_FRAME = EXTRA_PREFIX + ".ShowCropFrame";
         public static final String EXTRA_CROP_FRAME_COLOR = EXTRA_PREFIX + ".CropFrameColor";
@@ -329,8 +330,8 @@ public class UCrop {
          * Choose what set of gestures will be enabled on each tab - if any.
          */
         public void setAllowedGestures(@UCropActivity.GestureTypes int tabScale,
-                                       @UCropActivity.GestureTypes int tabRotate,
-                                       @UCropActivity.GestureTypes int tabAspectRatio) {
+                @UCropActivity.GestureTypes int tabRotate,
+                @UCropActivity.GestureTypes int tabAspectRatio) {
             mOptionBundle.putIntArray(EXTRA_ALLOWED_GESTURES, new int[]{tabScale, tabRotate, tabAspectRatio});
         }
 
@@ -373,6 +374,14 @@ public class UCrop {
          */
         public void setCircleDimmedLayer(boolean isCircle) {
             mOptionBundle.putBoolean(EXTRA_CIRCLE_DIMMED_LAYER, isCircle);
+        }
+
+        /**
+         *
+         * @param isFace - set to true if you want dimmed layer to have an face inside
+         */
+        public void setFaceDimmedLayer(boolean isFace){
+            mOptionBundle.putBoolean(EXTRA_FACE_DIMMED_LAYER, isFace);
         }
 
         /**

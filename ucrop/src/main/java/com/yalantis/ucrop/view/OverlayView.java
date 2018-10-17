@@ -5,6 +5,7 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.Path.Direction;
 import android.graphics.RectF;
 import android.graphics.Region;
 import android.os.Build;
@@ -38,9 +39,13 @@ public class OverlayView extends View {
     public static final boolean DEFAULT_SHOW_CROP_FRAME = true;
     public static final boolean DEFAULT_SHOW_CROP_GRID = true;
     public static final boolean DEFAULT_CIRCLE_DIMMED_LAYER = false;
+    public static final boolean DEFAULT_FACE_DIMMED_LAYER = false;
     public static final int DEFAULT_FREESTYLE_CROP_MODE = FREESTYLE_CROP_MODE_DISABLE;
     public static final int DEFAULT_CROP_GRID_ROW_COUNT = 2;
     public static final int DEFAULT_CROP_GRID_COLUMN_COUNT = 2;
+
+    private static final float DEFAULT_FACE_WIDTH_FACTOR = 0.325f;
+    private static final float DEFAULT_FACE_HEIGHT_FACTOR = 0.4f;
 
     private final RectF mCropViewRect = new RectF();
     private final RectF mTempRect = new RectF();
@@ -54,8 +59,11 @@ public class OverlayView extends View {
     private float[] mGridPoints = null;
     private boolean mShowCropFrame, mShowCropGrid;
     private boolean mCircleDimmedLayer;
+    private boolean mFaceDimmedLayer;
     private int mDimmedColor;
     private Path mCircularPath = new Path();
+    private Path mFacePath = new Path();
+    private RectF mFaceBottomRect = new RectF();
     private Paint mDimmedStrokePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Paint mCropGridPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Paint mCropFramePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -73,9 +81,11 @@ public class OverlayView extends View {
     private boolean mShouldSetupCropBounds;
 
     {
-        mTouchPointThreshold = getResources().getDimensionPixelSize(R.dimen.ucrop_default_crop_rect_corner_touch_threshold);
+        mTouchPointThreshold = getResources().getDimensionPixelSize(
+                R.dimen.ucrop_default_crop_rect_corner_touch_threshold);
         mCropRectMinSize = getResources().getDimensionPixelSize(R.dimen.ucrop_default_crop_rect_min_size);
-        mCropRectCornerTouchAreaLineLength = getResources().getDimensionPixelSize(R.dimen.ucrop_default_crop_rect_corner_touch_area_line_length);
+        mCropRectCornerTouchAreaLineLength = getResources().getDimensionPixelSize(
+                R.dimen.ucrop_default_crop_rect_corner_touch_area_line_length);
     }
 
     public OverlayView(Context context) {
@@ -137,6 +147,15 @@ public class OverlayView extends View {
      */
     public void setCircleDimmedLayer(boolean circleDimmedLayer) {
         mCircleDimmedLayer = circleDimmedLayer;
+    }
+
+    /**
+     * Setter for {@link #mFaceDimmedLayer} variable.
+     *
+     * @param faceDimmedLayer - set it to true if you want dimmed layer to be face shaped
+     */
+    public void setFaceDimmedLayer(boolean faceDimmedLayer) {
+        this.mFaceDimmedLayer = faceDimmedLayer;
     }
 
     /**
@@ -258,7 +277,39 @@ public class OverlayView extends View {
         mGridPoints = null;
         mCircularPath.reset();
         mCircularPath.addCircle(mCropViewRect.centerX(), mCropViewRect.centerY(),
-                Math.min(mCropViewRect.width(), mCropViewRect.height()) / 2.f, Path.Direction.CW);
+                Math.min(mCropViewRect.width(), mCropViewRect.height()) / 2.f, Direction.CW);
+
+        updateFaceGridPoints();
+    }
+
+    private void updateFaceGridPoints(){
+        final float faceHalfWidth;
+        final float faceHalfHeight;
+        if (mCropViewRect.width() <= mCropViewRect.height()) {
+            faceHalfWidth = mCropViewRect.width() * DEFAULT_FACE_WIDTH_FACTOR;
+            faceHalfHeight = mCropViewRect.width() * DEFAULT_FACE_HEIGHT_FACTOR;
+        } else {
+            faceHalfWidth = mCropViewRect.height() * DEFAULT_FACE_WIDTH_FACTOR;
+            faceHalfHeight = mCropViewRect.height() * DEFAULT_FACE_HEIGHT_FACTOR;
+        }
+
+        mFacePath.reset();
+
+        // left center
+        mFacePath.moveTo(mCropViewRect.centerX() - faceHalfWidth, mCropViewRect.centerY());
+        // top center
+        mFacePath.quadTo(mCropViewRect.centerX() - faceHalfWidth, mCropViewRect.centerY() - faceHalfHeight,
+                mCropViewRect.centerX(), mCropViewRect.centerY() - faceHalfHeight);
+        // right center
+        mFacePath.quadTo(mCropViewRect.centerX() + faceHalfWidth, mCropViewRect.centerY() - faceHalfHeight,
+                mCropViewRect.centerX() + faceHalfWidth, mCropViewRect.centerY());
+
+        // back to left center
+        mFaceBottomRect.set(mCropViewRect.centerX() - faceHalfWidth, mCropViewRect.centerY() - faceHalfHeight,
+                mCropViewRect.centerX() + faceHalfWidth, mCropViewRect.centerY() + faceHalfHeight);
+        mFacePath.arcTo(mFaceBottomRect, 0f, 180f, false);
+
+        mFacePath.close();
     }
 
     protected void init() {
@@ -418,7 +469,8 @@ public class OverlayView extends View {
             }
         }
 
-        if (mFreestyleCropMode == FREESTYLE_CROP_MODE_ENABLE && closestPointIndex < 0 && mCropViewRect.contains(touchX, touchY)) {
+        if (mFreestyleCropMode == FREESTYLE_CROP_MODE_ENABLE && closestPointIndex < 0 && mCropViewRect.contains(touchX,
+                touchY)) {
             return 4;
         }
 
@@ -447,7 +499,9 @@ public class OverlayView extends View {
      */
     protected void drawDimmedLayer(@NonNull Canvas canvas) {
         canvas.save();
-        if (mCircleDimmedLayer) {
+        if (mFaceDimmedLayer) {
+            canvas.clipPath(mFacePath, Region.Op.DIFFERENCE);
+        } else if (mCircleDimmedLayer) {
             canvas.clipPath(mCircularPath, Region.Op.DIFFERENCE);
         } else {
             canvas.clipRect(mCropViewRect, Region.Op.DIFFERENCE);
@@ -455,9 +509,12 @@ public class OverlayView extends View {
         canvas.drawColor(mDimmedColor);
         canvas.restore();
 
-        if (mCircleDimmedLayer) { // Draw 1px stroke to fix antialias
+        // Draw 1px stroke to fix antialias
+        if (mCircleDimmedLayer) {
             canvas.drawCircle(mCropViewRect.centerX(), mCropViewRect.centerY(),
                     Math.min(mCropViewRect.width(), mCropViewRect.height()) / 2.f, mDimmedStrokePaint);
+        }else if(mFaceDimmedLayer){
+            canvas.drawPath(mFacePath, mDimmedStrokePaint);
         }
     }
 
@@ -521,7 +578,8 @@ public class OverlayView extends View {
      */
     @SuppressWarnings("deprecation")
     protected void processStyledAttributes(@NonNull TypedArray a) {
-        mCircleDimmedLayer = a.getBoolean(R.styleable.ucrop_UCropView_ucrop_circle_dimmed_layer, DEFAULT_CIRCLE_DIMMED_LAYER);
+        mCircleDimmedLayer = a.getBoolean(R.styleable.ucrop_UCropView_ucrop_circle_dimmed_layer,
+                DEFAULT_CIRCLE_DIMMED_LAYER);
         mDimmedColor = a.getColor(R.styleable.ucrop_UCropView_ucrop_dimmed_color,
                 getResources().getColor(R.color.ucrop_color_default_dimmed));
         mDimmedStrokePaint.setColor(mDimmedColor);
@@ -566,7 +624,8 @@ public class OverlayView extends View {
         mCropGridPaint.setColor(cropGridColor);
 
         mCropGridRowCount = a.getInt(R.styleable.ucrop_UCropView_ucrop_grid_row_count, DEFAULT_CROP_GRID_ROW_COUNT);
-        mCropGridColumnCount = a.getInt(R.styleable.ucrop_UCropView_ucrop_grid_column_count, DEFAULT_CROP_GRID_COLUMN_COUNT);
+        mCropGridColumnCount = a.getInt(R.styleable.ucrop_UCropView_ucrop_grid_column_count,
+                DEFAULT_CROP_GRID_COLUMN_COUNT);
     }
 
 
