@@ -201,6 +201,7 @@ public class OverlayView extends View {
      */
     public void setDimmedColor(@ColorInt int dimmedColor) {
         mDimmedColor = dimmedColor;
+        mDimmedStrokePaint.setColor(mDimmedColor);
     }
 
     /**
