@@ -270,6 +270,8 @@ public class UCrop {
 
         public static final String EXTRA_DIMMED_LAYER_COLOR = EXTRA_PREFIX + ".DimmedLayerColor";
         public static final String EXTRA_CIRCLE_DIMMED_LAYER = EXTRA_PREFIX + ".CircleDimmedLayer";
+        public static final String EXTRA_CIRCLE_DIMMED_LAYER_STROKE_WIDTH = EXTRA_PREFIX + ".CircleDimmedLayerStrokeWidth";
+        public static final String EXTRA_CIRCLE_DIMMED_LAYER_STROKE_COLOR = EXTRA_PREFIX + ".CircleDimmedLayerStrokeColor";
 
         public static final String EXTRA_SHOW_CROP_FRAME = EXTRA_PREFIX + ".ShowCropFrame";
         public static final String EXTRA_CROP_FRAME_COLOR = EXTRA_PREFIX + ".CropFrameColor";
@@ -375,6 +377,20 @@ public class UCrop {
          */
         public void setCircleDimmedLayer(boolean isCircle) {
             mOptionBundle.putBoolean(EXTRA_CIRCLE_DIMMED_LAYER, isCircle);
+        }
+
+        /**
+         * @param width - desired width of circle stroke in pixels
+         */
+        public void setCircleDimmedLayerStrokeWidth(@IntRange(from = 0) int width) {
+            mOptionBundle.putInt(EXTRA_CIRCLE_DIMMED_LAYER_STROKE_WIDTH, width);
+        }
+
+        /**
+         * @param color - desired color of circle stroke
+         */
+        public void setCircleDimmedLayerStrokeColor(@ColorInt int color) {
+            mOptionBundle.putInt(EXTRA_CIRCLE_DIMMED_LAYER_STROKE_COLOR, color);
         }
 
         /**

@@ -141,6 +141,22 @@ public class OverlayView extends View {
     }
 
     /**
+     * Setter for circle dimmed layer stroke color.
+     *
+     * @param color - desired color of dimmed area around the crop bounds
+     */
+    public void setCircleDimmedLayerStrokeColor(@ColorInt int color) {
+        mDimmedStrokePaint.setColor(color);
+    }
+
+    /**
+     * Setter for circle dimmed layer stroke width.
+     */
+    public void setCircleDimmedLayerStrokeWidth(@IntRange(from = 0) int width) {
+        mDimmedStrokePaint.setStrokeWidth(width);
+    }
+
+    /**
      * Setter for crop grid rows count.
      * Resets {@link #mGridPoints} variable because it is not valid anymore.
      */
