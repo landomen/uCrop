@@ -40,6 +40,7 @@ import androidx.annotation.IdRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.Px;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.transition.AutoTransition;
@@ -77,6 +78,8 @@ public class UCropFragment extends Fragment {
     @ColorInt
     private int mRootViewBackgroundColor;
     private int mLogoColor;
+    @Px
+    private int mCropViewPadding;
 
     private boolean mShowBottomControls;
 
@@ -139,8 +142,10 @@ public class UCropFragment extends Fragment {
         mLogoColor = args.getInt(UCrop.Options.EXTRA_UCROP_LOGO_COLOR, ContextCompat.getColor(getContext(), R.color.ucrop_color_default_logo));
         mShowBottomControls = !args.getBoolean(UCrop.Options.EXTRA_HIDE_BOTTOM_CONTROLS, false);
         mRootViewBackgroundColor = args.getInt(UCrop.Options.EXTRA_UCROP_ROOT_VIEW_BACKGROUND_COLOR, ContextCompat.getColor(getContext(), R.color.ucrop_color_crop_background));
+        mCropViewPadding = args.getInt(Options.EXTRA_CROP_FRAME_PADDING, 0);
 
         initiateRootViews(view);
+
         callback.loadingProgress(true);
 
         if (mShowBottomControls) {
@@ -226,6 +231,7 @@ public class UCropFragment extends Fragment {
         mOverlayView.setShowCropFrame(bundle.getBoolean(UCrop.Options.EXTRA_SHOW_CROP_FRAME, OverlayView.DEFAULT_SHOW_CROP_FRAME));
         mOverlayView.setCropFrameColor(bundle.getInt(UCrop.Options.EXTRA_CROP_FRAME_COLOR, getResources().getColor(R.color.ucrop_color_default_crop_frame)));
         mOverlayView.setCropFrameStrokeWidth(bundle.getInt(UCrop.Options.EXTRA_CROP_FRAME_STROKE_WIDTH, getResources().getDimensionPixelSize(R.dimen.ucrop_default_crop_frame_stoke_width)));
+        mOverlayView.setCropFrameYPositionPercentage(bundle.getFloat(Options.EXTRA_CROP_FRAME_Y_POSITION_PERCENTAGE, 0.5f));
 
         mOverlayView.setShowCropGrid(bundle.getBoolean(UCrop.Options.EXTRA_SHOW_CROP_GRID, OverlayView.DEFAULT_SHOW_CROP_GRID));
         mOverlayView.setCropGridRowCount(bundle.getInt(UCrop.Options.EXTRA_CROP_GRID_ROW_COUNT, OverlayView.DEFAULT_CROP_GRID_ROW_COUNT));
@@ -264,8 +270,10 @@ public class UCropFragment extends Fragment {
 
     private void initiateRootViews(View view) {
         mUCropView = view.findViewById(R.id.ucrop);
+
         mGestureCropImageView = mUCropView.getCropImageView();
         mOverlayView = mUCropView.getOverlayView();
+        mOverlayView.setPadding(mCropViewPadding, 0, mCropViewPadding, 0);
 
         mGestureCropImageView.setTransformImageListener(mImageListener);
 

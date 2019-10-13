@@ -5,6 +5,7 @@ import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
@@ -357,18 +358,38 @@ public class SampleActivity extends BaseActivity implements UCropFragmentCallbac
 
         Tune everything (ﾉ◕ヮ◕)ﾉ*:･ﾟ✧
 
-        options.setMaxScaleMultiplier(5);
-        options.setImageToCropBoundsAnimDuration(666);
-        options.setDimmedLayerColor(Color.CYAN);
-        options.setCircleDimmedLayer(true);
-        options.setShowCropFrame(false);
-        options.setCropGridStrokeWidth(20);
-        options.setCropGridColor(Color.GREEN);
-        options.setCropGridColumnCount(2);
-        options.setCropGridRowCount(1);
-        options.setToolbarCropDrawable(R.drawable.your_crop_icon);
-        options.setToolbarCancelDrawable(R.drawable.your_cancel_icon);
+/*
 
+        */
+//        options.setMaxScaleMultiplier(5);
+//        options.setImageToCropBoundsAnimDuration(666);
+//        options.setDimmedLayerColor(Color.CYAN);
+//        options.setCircleDimmedLayer(true);
+//        options.setShowCropFrame(false);
+//        options.setCropGridStrokeWidth(20);
+//        options.setCropGridColor(Color.GREEN);
+//        options.setCropGridColumnCount(2);
+//        options.setCropGridRowCount(1);
+//        options.setToolbarCropDrawable(R.drawable.your_crop_icon);
+//        options.setToolbarCancelDrawable(R.drawable.your_cancel_icon);
+
+        options.setCompressionFormat(Bitmap.CompressFormat.JPEG);
+        options.setCompressionQuality(100);
+
+        options.setHideBottomControls(true);
+        options.setFreeStyleCropEnabled(false);
+        options.setShowCropGrid(false);
+        options.setShowCropFrame(true);
+        options.setCircleDimmedLayer(true);
+        options.setDimmedLayerColor(Color.parseColor("#E60D2460"));
+        options.setRootViewBackgroundColor(Color.parseColor("#E60D2460"));
+        options.setLogoColor(Color.parseColor("#E60D2460")); // hide logo
+        options.setCircleDimmedLayerStrokeColor(Color.parseColor("#0D51FF"));
+        options.setCircleDimmedLayerStrokeWidth(15);
+        options.setCropFramePadding(getResources().getDimensionPixelSize(R.dimen.ucrop_height_crop_aspect_ratio_text));
+        options.setCropFrameYPositionPercentage(0.4f);
+
+        /*
         // Color palette
         options.setToolbarColor(ContextCompat.getColor(this, R.color.your_color_res));
         options.setStatusBarColor(ContextCompat.getColor(this, R.color.your_color_res));
