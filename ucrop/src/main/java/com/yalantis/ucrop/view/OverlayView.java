@@ -69,7 +69,7 @@ public class OverlayView extends View {
     private int mTouchPointThreshold;
     private int mCropRectMinSize;
     private int mCropRectCornerTouchAreaLineLength;
-    private float mCropFrameYPositionPercentage = 1f;
+    private float mCropFrameYPositionPercentage = 0.5f;
 
     private OverlayViewChangeListener mCallback;
 
@@ -231,7 +231,7 @@ public class OverlayView extends View {
      * Settter for crop frame y position.
      */
     public void setCropFrameYPositionPercentage(@FloatRange(from = 0f, to = 1f) float percent) {
-        mCropFrameYPositionPercentage = percent + 0.5f;
+        mCropFrameYPositionPercentage = percent;
     }
 
     /**
@@ -268,10 +268,10 @@ public class OverlayView extends View {
             mCropViewRect.set(getPaddingLeft() + halfDiff, getPaddingTop(),
                     getPaddingLeft() + width + halfDiff, getPaddingTop() + mThisHeight);
         } else {
-            int halfDiff = (mThisHeight - height) / 2;
-            int y = (int) (halfDiff * mCropFrameYPositionPercentage);
-            mCropViewRect.set(getPaddingLeft(), getPaddingTop() + y,
-                    getPaddingLeft() + mThisWidth, getPaddingTop() + height + y);
+            int y = (int) (mThisHeight * mCropFrameYPositionPercentage);
+
+            mCropViewRect.set(getPaddingLeft(), getPaddingTop() + y - (height / 2f),
+                    getPaddingLeft() + mThisWidth, getPaddingTop() + y + (height / 2f));
         }
 
         if (mCallback != null) {
