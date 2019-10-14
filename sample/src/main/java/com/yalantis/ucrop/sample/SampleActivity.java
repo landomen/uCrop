@@ -284,7 +284,8 @@ public class SampleActivity extends BaseActivity implements UCropFragmentCallbac
                 uCrop = uCrop.useSourceImageAspectRatio();
                 break;
             case R.id.radio_square:
-                uCrop = uCrop.withAspectRatio(1, 1);
+                uCrop = uCrop.withAspectRatio(1, 1)
+                        .withMaxResultSize(600, 600);
                 break;
             case R.id.radio_dynamic:
                 // do nothing
@@ -381,13 +382,14 @@ public class SampleActivity extends BaseActivity implements UCropFragmentCallbac
         options.setShowCropGrid(false);
         options.setShowCropFrame(true);
         options.setCircleDimmedLayer(true);
-        options.setDimmedLayerColor(Color.parseColor("#E60D2460"));
+        options.setDimmedLayerColor(Color.parseColor("#00FFFFFF"));
         options.setRootViewBackgroundColor(Color.parseColor("#E60D2460"));
         options.setLogoColor(Color.parseColor("#E60D2460")); // hide logo
         options.setCircleDimmedLayerStrokeColor(Color.parseColor("#0D51FF"));
         options.setCircleDimmedLayerStrokeWidth(15);
         options.setCropFramePadding(getResources().getDimensionPixelSize(R.dimen.ucrop_height_crop_aspect_ratio_text));
         options.setCropFrameYPositionPercentage(0.4f);
+        options.setImageInitialFullscreen(true);
 
         /*
         // Color palette

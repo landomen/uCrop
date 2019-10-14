@@ -53,6 +53,7 @@ public class CropImageView extends TransformImageView {
     private float mMaxScale, mMinScale;
     private int mMaxResultImageSizeX = 0, mMaxResultImageSizeY = 0;
     private long mImageToWrapCropBoundsAnimDuration = DEFAULT_IMAGE_TO_CROP_BOUNDS_ANIM_DURATION;
+    private boolean mInitialImageFullscreen = false;
 
     public CropImageView(Context context) {
         this(context, null);
@@ -122,6 +123,7 @@ public class CropImageView extends TransformImageView {
         calculateImageScaleBounds();
         setImageToWrapCropBounds();
     }
+
 
     /**
      * This method sets aspect ratio for crop bounds.
@@ -264,6 +266,10 @@ public class CropImageView extends TransformImageView {
 
     public void setImageToWrapCropBounds() {
         setImageToWrapCropBounds(true);
+    }
+
+    public void setInitialImageFullscreen(boolean mInitialImageFullscreen) {
+        this.mInitialImageFullscreen = mInitialImageFullscreen;
     }
 
     /**
@@ -479,21 +485,36 @@ public class CropImageView extends TransformImageView {
      * @param drawableHeight - image height
      */
     private void setupInitialImagePosition(float drawableWidth, float drawableHeight) {
-        float cropRectWidth = mCropRect.width();
-        float cropRectHeight = mCropRect.height();
+        if (mInitialImageFullscreen) {
+            float widthScale = mThisWidth / drawableWidth;
+            float heightScale = mThisHeight / drawableHeight;
 
-        float widthScale = mCropRect.width() / drawableWidth;
-        float heightScale = mCropRect.height() / drawableHeight;
+            float initialMinScale = Math.max(widthScale, heightScale);
 
-        float initialMinScale = Math.max(widthScale, heightScale);
+            float tw = (mThisWidth - drawableWidth * initialMinScale) / 2.0f;
+            float th = (mThisHeight - drawableHeight * initialMinScale) / 2.0f;
 
-        float tw = (cropRectWidth - drawableWidth * initialMinScale) / 2.0f + mCropRect.left;
-        float th = (cropRectHeight - drawableHeight * initialMinScale) / 2.0f + mCropRect.top;
+            mCurrentImageMatrix.reset();
+            mCurrentImageMatrix.postScale(initialMinScale, initialMinScale);
+            mCurrentImageMatrix.postTranslate(tw, th);
+            setImageMatrix(mCurrentImageMatrix);
+        } else {
+            float cropRectWidth = mCropRect.width();
+            float cropRectHeight = mCropRect.height();
 
-        mCurrentImageMatrix.reset();
-        mCurrentImageMatrix.postScale(initialMinScale, initialMinScale);
-        mCurrentImageMatrix.postTranslate(tw, th);
-        setImageMatrix(mCurrentImageMatrix);
+            float widthScale = mCropRect.width() / drawableWidth;
+            float heightScale = mCropRect.height() / drawableHeight;
+
+            float initialMinScale = Math.max(widthScale, heightScale);
+
+            float tw = (cropRectWidth - drawableWidth * initialMinScale) / 2.0f + mCropRect.left;
+            float th = (cropRectHeight - drawableHeight * initialMinScale) / 2.0f + mCropRect.top;
+
+            mCurrentImageMatrix.reset();
+            mCurrentImageMatrix.postScale(initialMinScale, initialMinScale);
+            mCurrentImageMatrix.postTranslate(tw, th);
+            setImageMatrix(mCurrentImageMatrix);
+        }
     }
 
     /**

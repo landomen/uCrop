@@ -270,6 +270,7 @@ public class UCrop {
         public static final String EXTRA_MAX_BITMAP_SIZE = EXTRA_PREFIX + ".MaxBitmapSize";
         public static final String EXTRA_MAX_SCALE_MULTIPLIER = EXTRA_PREFIX + ".MaxScaleMultiplier";
         public static final String EXTRA_IMAGE_TO_CROP_BOUNDS_ANIM_DURATION = EXTRA_PREFIX + ".ImageToCropBoundsAnimDuration";
+        public static final String EXTRA_IMAGE_INITIAL_FULLSCREEN = EXTRA_PREFIX + ".InitialImageFullscreen";
 
         public static final String EXTRA_DIMMED_LAYER_COLOR = EXTRA_PREFIX + ".DimmedLayerColor";
         public static final String EXTRA_CIRCLE_DIMMED_LAYER = EXTRA_PREFIX + ".CircleDimmedLayer";
@@ -362,6 +363,13 @@ public class UCrop {
         public void setImageToCropBoundsAnimDuration(
                 @IntRange(from = MIN_SIZE) int durationMillis) {
             mOptionBundle.putInt(EXTRA_IMAGE_TO_CROP_BOUNDS_ANIM_DURATION, durationMillis);
+        }
+
+        /**
+         * @param fullscreen True if initial image should fill full screen, instead of shorter side.
+         */
+        public void setImageInitialFullscreen(boolean fullscreen) {
+            mOptionBundle.putBoolean(EXTRA_IMAGE_INITIAL_FULLSCREEN, fullscreen);
         }
 
         /**
